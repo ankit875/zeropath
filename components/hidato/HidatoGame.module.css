@@ -1,0 +1,75 @@
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  .gameHeader {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  
+  .title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 0 0 8px;
+    background: linear-gradient(90deg, #1976d2, #7e57c2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -1px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  }
+  
+  .subtitle {
+    font-size: 1.3rem;
+    color: #546e7a;
+    margin: 0;
+    font-weight: 500;
+  }
+  
+  .gameContent {
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    padding: 32px;
+    margin-bottom: 30px;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .gameContent::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #1976d2, #7e57c2);
+  }
+  
+  .gameFooter {
+    background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+    border-radius: 12px;
+    padding: 20px 24px;
+    text-align: center;
+    color: #2e7d32;
+    box-shadow: 0 4px 16px rgba(46, 125, 50, 0.1);
+    border-left: 4px solid #43a047;
+    font-weight: 500;
+  }
+  
+  @media (max-width: 600px) {
+    .container {
+      padding: 20px 16px;
+    }
+  
+    .title {
+      font-size: 2.5rem;
+    }
+  
+    .gameContent {
+      padding: 24px 16px;
+    }
+  }

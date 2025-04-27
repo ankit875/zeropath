@@ -1,0 +1,243 @@
+.controls {
+    max-width: 400px;
+    margin: 0 auto 32px;
+  }
+  
+  .nextNumberIndicator {
+    background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+    border-radius: 8px;
+    padding: 12px 16px;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  }
+  
+  .nextLabel {
+    color: #546e7a;
+    margin-right: 10px;
+  }
+  
+  .nextValue {
+    color: #1976d2;
+    font-size: 1.5rem;
+    background-color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(33, 150, 243, 0.2);
+  }
+  
+  .nextComplete {
+    color: #43a047;
+    font-weight: 600;
+  }
+  
+  .repositionMode {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .repositionLabel {
+    color: #ff9800;
+    margin-right: 10px;
+  }
+  
+  .cancelButton {
+    margin-left: 10px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .cancelButton:hover {
+    background-color: #d32f2f;
+  }
+  
+  .placedNumbers {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+  }
+  
+  .placedNumbersTitle {
+    font-weight: 600;
+    color: #546e7a;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .placedHint {
+    font-size: 0.8rem;
+    color: #78909c;
+    font-weight: normal;
+  }
+  
+  .numbersList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .placedNumber {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: #37474f;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .placedNumber:hover {
+    background-color: #f5f5f5;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .activeNumber {
+    border: 2px solid #ff9800;
+    background-color: #fff3e0;
+    color: #e65100;
+  }
+  
+  .buttonGroup {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  
+  .button {
+    flex: 1;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  
+  .verifyButton {
+    background: linear-gradient(to right, #2196f3, #1565c0);
+    color: white;
+  }
+  
+  .verifyButton:hover:not(:disabled) {
+    background: linear-gradient(to right, #1976d2, #0d47a1);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(33, 150, 243, 0.3);
+  }
+  
+  .resetButton {
+    background: linear-gradient(to right, #ffffff, #f5f5f5);
+    color: #424242;
+    border: 1px solid #e0e0e0;
+  }
+  
+  .resetButton:hover:not(:disabled) {
+    background: linear-gradient(to right, #f5f5f5, #eeeeee);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+  }
+  
+  .successMessage {
+    padding: 16px;
+    background: linear-gradient(to right, #e8f5e9, #c8e6c9);
+    border: none;
+    color: #2e7d32;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+    animation: successAppear 0.5s ease;
+  }
+  
+  @keyframes successAppear {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .errorMessage {
+    padding: 16px;
+    background: linear-gradient(to right, #ffebee, #ffcdd2);
+    border: none;
+    color: #c62828;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(198, 40, 40, 0.15);
+    animation: errorAppear 0.3s ease;
+  }
+  
+  @keyframes errorAppear {
+    0% { opacity: 0; transform: translateY(-5px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  
+  .note {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
+    border-left: 4px solid #2196f3;
+  }
+  
+  .note p {
+    margin-top: 0;
+    margin-bottom: 12px;
+    color: #455a64;
+  }
+  
+  .helpTitle {
+    color: #ff9800;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 12px;
+    margin-top: 16px;
+  }
+  
+  .note ul {
+    margin: 0;
+    padding-left: 20px;
+    color: #546e7a;
+  }
+  
+  .note li {
+    margin-bottom: 6px;
+  }
+  
+  .note li:last-child {
+    margin-bottom: 0;
+  }

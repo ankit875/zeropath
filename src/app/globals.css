@@ -1,0 +1,39 @@
+:root {
+  --bg-dark: #111827;
+  --bg-card: #1f2937;
+  --bg-cell: #2d3748;
+  --text-light: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --accent-blue: #4f46e5;
+  --accent-purple: #8b5cf6;
+  --accent-green: #42c384;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+body {
+  color: var(--text-light);
+  background-color: var(--bg-dark);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}

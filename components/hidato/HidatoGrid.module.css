@@ -1,0 +1,174 @@
+.grid {
+    display: grid;
+    gap: 8px;
+    margin: 32px auto;
+    max-width: 400px;
+    position: relative;
+  }
+  
+  .cell {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    font-size: 1.5rem;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    color: #37474f;
+  }
+  
+  .cellContent {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .fixed {
+    background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+    box-shadow: 0 4px 12px rgba(0, 131, 143, 0.15);
+    color: #006064;
+    font-weight: 700;
+  }
+  
+  .filled {
+    background-color: #f5f5f5;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .clickable {
+    cursor: pointer;
+  }
+  
+  .next:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background-color: #f0f0f0;
+  }
+  
+  .verified .cell {
+    background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+    color: #2e7d32;
+  }
+  
+  /* Add animation for verification */
+  @keyframes celebrateVerified {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+  
+  .verified .cell {
+    animation: celebrateVerified 0.5s ease;
+  }
+  
+  .hoverIndicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(33, 150, 243, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    color: #1976d2;
+    font-size: 1.5rem;
+    border: 2px dashed #2196f3;
+    border-radius: 4px;
+  }
+  
+  .next:hover .hoverIndicator {
+    opacity: 1;
+  }
+  
+  /* Selected number styling */
+  .selected {
+    position: relative;
+    z-index: 2;
+  }
+  
+  .selectedIndicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  
+  .selectionRing {
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    border: 3px solid #ff9800;
+    border-radius: 12px;
+    animation: pulseSelection 1.5s infinite;
+  }
+  
+  @keyframes pulseSelection {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.8; }
+  }
+  
+  /* Hint cell styling */
+  .hintCell {
+    animation: pulseHint 1.5s infinite;
+    box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.5);
+    z-index: 2;
+  }
+  
+  @keyframes pulseHint {
+    0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+  }
+  
+  /* Hint button */
+  .hintButton {
+    position: absolute;
+    top: -45px;
+    right: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ffeb3b, #ffc107);
+    border: none;
+    box-shadow: 0 2px 8px rgba(255, 193, 7, 0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    transition: all 0.2s ease;
+    z-index: 10;
+  }
+  
+  .hintButton:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.6);
+  }
+  
+  .hintButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
