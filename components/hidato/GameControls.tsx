@@ -12,7 +12,8 @@ const GameControls = () => {
     nextNumber,
     placementHistory,
     selectedNumber,
-    removeNumber
+    removeNumber,
+    fixedPositions,
   } = useHidato();
 
   const maxNumber = 16; // 4x4 grid
@@ -22,8 +23,8 @@ const GameControls = () => {
 
   // Check if a number is fixed (part of the initial puzzle)
   function isFixedNumber(num: number) {
-    // Fixed numbers in 4x4 example: 1, 4, 8, 16
-    return [1, 4, 8, 16].includes(num);
+    // Check if the number is in the fixed positions
+    return fixedPositions.some(pos => pos.value === num);
   }
 
   return (
@@ -83,7 +84,6 @@ const GameControls = () => {
         >
           {isVerifying ? 'Verifying...' : 'Verify Solution'}
         </button>
-        
         <button 
           className={`${styles.button} ${styles.resetButton}`}
           onClick={resetGame}
@@ -114,16 +114,6 @@ const GameControls = () => {
           <li>Numbers must form a continuous path where consecutive numbers are adjacent</li>
           <li>Adjacent means horizontally, vertically, or diagonally connected</li>
           <li>Some numbers are already placed as fixed clue points</li>
-        </ul>
-        
-        <p className={styles.helpTitle}>
-          <strong>Controls:</strong>
-        </p>
-        <ul>
-          <li>Click on an empty cell to place the next consecutive number</li>
-          <li>Right-click on a number to select it for repositioning</li>
-          <li>Click the &quot;Remove&quot; button or click on the number in the list to remove it</li>
-          <li>Use the 💡 hint button to get help finding a valid move</li>
         </ul>
       </div>
     </div>

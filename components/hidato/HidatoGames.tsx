@@ -20,7 +20,7 @@ const HidatoGame: React.FC = () => {
         
         <div className={styles.gameFooter}>
           <p>
-            <strong>Future Feature:</strong> This game will integrate with Noir to generate zero-knowledge proofs, 
+            <strong>Feature:</strong> This game integrated with Noir to generate zero-knowledge proofs, 
             allowing you to verify solutions without revealing them!
           </p>
         </div>
