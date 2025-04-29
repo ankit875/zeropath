@@ -1,7 +1,7 @@
 "use client";
 
 import { Noir } from "@noir-lang/noir_js";
-import circuit from "../circuits/target/circuits.json";
+import circuit from "../circuits/zeropath/target/zeropath.json";
 import { CompiledCircuit } from "@noir-lang/noir_js";
 
 import React, {
