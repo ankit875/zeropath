@@ -79,7 +79,7 @@ const HidatoGrid = () => {
     }
     
     // If the cell already has a value and we're replacing it, mark as mistake
-    if (solution[row][col] !== 0 && solution[row][col] !== '') {
+    if (solution[row][col] !== 0 && solution[row][col] !== null) {
       markMistake();
     }
     
@@ -93,7 +93,7 @@ const HidatoGrid = () => {
     // Only allow selecting non-fixed numbers
     if (value > 1 && puzzle[row][col] === 0) {
       // If removing a value, mark as mistake
-      if (solution[row][col] !== 0 && solution[row][col] !== '') {
+      if (solution[row][col] !== 0 && solution[row][col] !== null) {
         markMistake();
       }
       

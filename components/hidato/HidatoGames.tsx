@@ -3,6 +3,7 @@ import { HidatoProvider } from '../../context/HidatoContext';
 import HidatoGrid from './HidatoGrid';
 import GameControls from './GameControls';
 import styles from './HidatoGame.module.css';
+import { WalletConnect } from './WalletConnect';
 
 const HidatoGame: React.FC = () => {
   return (
@@ -14,6 +15,7 @@ const HidatoGame: React.FC = () => {
         </div>
         
         <div className={styles.gameContent}>
+        <WalletConnect/>
           <HidatoGrid />
           <GameControls />
         </div>
