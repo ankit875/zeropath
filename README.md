@@ -73,7 +73,7 @@ zeropath/
 ## Future Enhancements
 
 - Multiple puzzle difficulties
-- Puzzle generator
+- Competitive mode with time tracking
 - On-chain verification
 - Leaderboard
 
