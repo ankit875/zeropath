@@ -158,9 +158,7 @@ export const HidatoProvider: React.FC<HidatoProviderProps> = ({ children }) => {
 
       // Extract the puzzle from the witness
       const puzzleOutput = await generate_random_puzzle(gridSize.toString(), randomness);
-      console.log("Puzzle output", puzzleOutput);
-      // Convert the 1D array output to a 2D grid
-      // Convert the hexadecimal output to decimal before converting to a grid
+  
       const puzzleOutputDecimal = puzzleOutput.map((hex: string) => parseInt(hex, 16));
       const newPuzzle = arrayToGrid(puzzleOutputDecimal, gridSize);
       
