@@ -1,8 +1,9 @@
 "use client";
 
 import { Noir } from "@noir-lang/noir_js";
-import circuit from "../circuits/zeropath/target/zeropath.json";
+import circuit from "../circuits/zeropath/target/zeropath.json"; // Update path to your hidato circuit
 import { CompiledCircuit } from "@noir-lang/noir_js";
+import {generate_random_puzzle} from "../codegen/index"
 
 import React, {
   createContext,
@@ -13,12 +14,17 @@ import React, {
   useEffect,
 } from "react";
 import { UltraHonkBackend } from "@aztec/bb.js";
-import { generateRandomPuzzle } from "utils/utils";
 
 // Types
 type CellValue = number;
 type GridRow = CellValue[];
 type Grid = GridRow[];
+
+interface Coordinate {
+  row: number;
+  col: number;
+  value: number;
+}
 
 interface HidatoContextType {
   gridSize: number;
@@ -30,6 +36,8 @@ interface HidatoContextType {
   nextNumber: number;
   placementHistory: number[];
   selectedNumber: number | null;
+  verificationMessage: boolean;
+  setVerificationMessage: (message: boolean) => void;
   fixedPositions: { row: number; col: number; value: number }[];
   updateCell: (row: number, col: number) => void;
   removeNumber: (num: number) => void;
@@ -43,6 +51,7 @@ interface HidatoContextType {
   pauseTimer: () => void;
   mistakeCount: number;
   markMistake: () => void;
+
 }
 
 interface HidatoProviderProps {
@@ -59,6 +68,24 @@ export const useHidato = (): HidatoContextType => {
     throw new Error("useHidato must be used within a HidatoProvider");
   }
   return context;
+};
+
+// Helper function to convert a 1D array to a 2D grid
+const arrayToGrid = (array: number[], gridSize: number): Grid => {
+  const grid: Grid = [];
+  for (let i = 0; i < gridSize; i++) {
+    const row: GridRow = [];
+    for (let j = 0; j < gridSize; j++) {
+      row.push(array[i * gridSize + j]);
+    }
+    grid.push(row);
+  }
+  return grid;
+};
+
+// Helper function to convert a 2D grid to a 1D array
+const gridToArray = (grid: Grid): number[] => {
+  return grid.flat();
 };
 
 // Provider component
@@ -78,6 +105,7 @@ export const HidatoProvider: React.FC<HidatoProviderProps> = ({ children }) => {
   const [isVerified, setIsVerified] = useState<boolean>(false);
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [verificationMessage, setVerificationMessage] = useState<boolean>(false);
   const [placementHistory, setPlacementHistory] = useState<number[]>([]);
   const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
   const [fixedPositions, setFixedPositions] = useState<
@@ -87,16 +115,91 @@ export const HidatoProvider: React.FC<HidatoProviderProps> = ({ children }) => {
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [timerActive, setTimerActive] = useState<boolean>(false);
   const [mistakeCount, setMistakeCount] = useState<number>(0);
+  
+  // Generate a new puzzle using the Noir circuit
+  const generatePuzzleWithNoir = useCallback(async () => {
+    try {
+      setVerificationMessage(true);
+      setIsVerifying(true);
+      setError(null);
+      const start = performance.now();
 
-  useEffect(() => {
-    const { puzzle: initialPuzzle, fixedPositions } =
-      generateRandomPuzzle(gridSize);
-    console.log("Fixed positions:", fixedPositions);
-    setPuzzle(initialPuzzle);
-    setFixedPositions(fixedPositions);
-    setSolution(initialPuzzle);
+      // Instantiate the Noir circuit
+      const noir = new Noir(circuit as CompiledCircuit);
+      const randomness = Date.now().toString();
+
+      const initializationTime = performance.now() - start;
+     
+      console.log("Circuit initialized in", initializationTime, "ms");
+      // Execute the circuit in "generation mode" (mode = 0)
+      const { witness } = await noir.execute({
+        mode: 0,
+        randomness: randomness,
+        grid_size: gridSize,
+        solution: Array(16).fill(0), // Placeholder, not used in generation mode
+        fixed_positions: Array(4).fill({ row: 0, col: 0, value: 0 }) // Placeholder
+      });
+
+      const witnessTime = performance.now() - initializationTime;
+      // console.log("Return value", returnValue);
+      const backend = new UltraHonkBackend(circuit.bytecode);
+      
+      // Wait for the proof generation
+      let {proof} = await backend.generateProof(witness);
+      proof = proof.slice(4);
+
+      console.log("Proof", proof);
+      const provingTime = performance.now() - witnessTime;
+
+      console.log(`Proving time: ${provingTime}ms`);
+      
+      const totalTime = performance.now() - start;
+      console.log(`Total time: ${totalTime}ms`);
+
+      // Extract the puzzle from the witness
+      const puzzleOutput = await generate_random_puzzle(gridSize.toString(), randomness);
+      console.log("Puzzle output", puzzleOutput);
+      // Convert the 1D array output to a 2D grid
+      // Convert the hexadecimal output to decimal before converting to a grid
+      const puzzleOutputDecimal = puzzleOutput.map((hex: string) => parseInt(hex, 16));
+      const newPuzzle = arrayToGrid(puzzleOutputDecimal, gridSize);
+      
+      // Extract fixed positions from the generated puzzle
+      const newFixedPositions: Coordinate[] = [];
+      for (let i = 0; i < gridSize; i++) {
+        for (let j = 0; j < gridSize; j++) {
+          if (newPuzzle[i][j] !== 0) {
+            newFixedPositions.push({
+              row: i,
+              col: j,
+              value: newPuzzle[i][j]
+            });
+          }
+        }
+      }
+      
+      // Update state with the generated puzzle and fixed positions
+      setPuzzle(newPuzzle);
+      setSolution(newPuzzle); // Initialize solution with the puzzle
+      setFixedPositions(newFixedPositions);
+      setIsVerifying(false);
+      setVerificationMessage(false);
+      
+      console.log("Puzzle generated successfully", newPuzzle, newFixedPositions);
+      
+    } catch (error) {
+      console.error("Error generating puzzle:", error);
+      setIsVerifying(false);
+      setVerificationMessage(false);
+      setError("Failed to generate puzzle. Please try again.");
+    }
   }, [gridSize]);
 
+  // Generate a puzzle when the component mounts
+  useEffect(() => {
+    generatePuzzleWithNoir();
+  }, [generatePuzzleWithNoir]);
+  
   // Add timer functionality
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -289,43 +392,22 @@ export const HidatoProvider: React.FC<HidatoProviderProps> = ({ children }) => {
     return false;
   };
 
-  // Verification method
-  // const verifySimple = useCallback(async () => {
-  //   setIsVerifying(true);
-  //   setError(null);
-
-  //   const noir = new Noir(circuit as CompiledCircuit);
-  //   const { witness } = await noir.execute({
-  //     solution: solution.flat(),
-  //     grid_size: gridSize,
-  //     fixed_positions: fixedPositions,
-  //   });
-  //   const backend = new UltraHonkBackend(circuit.bytecode);
-  //   try {
-  //     const proof = await backend.generateProof(witness);
-  //     setIsVerifying(false);
-  //     setIsVerified(true);
-  //     console.log(proof);
-  //   } catch (error) {
-  //     console.error("Error generating proof:", error);
-  //     setIsVerifying(false);
-  //     setIsVerified(false);
-  //     // Enable reset game button by setting error state
-  //     setError("Verification failed. Please reset the game.");
-  //   }
-
-    
-  // }, [solution, fixedPositions]);
-
+  // Verify the solution using the Noir circuit
   const verifySimple = useCallback(async () => {
     setIsVerifying(true);
     setError(null);
+    setVerificationMessage(true);
 
     try {
       const noir = new Noir(circuit as CompiledCircuit);
+      
+      console.log("Solution to verify", gridToArray(solution), fixedPositions);
+      // Execute the circuit in "verification mode" (mode = 1)
       const { witness } = await noir.execute({
-        solution: solution.flat(),
+        mode: 1,
+        randomness: "0", // Not used in verification mode
         grid_size: gridSize,
+        solution: gridToArray(solution),
         fixed_positions: fixedPositions,
       });
       
@@ -335,9 +417,11 @@ export const HidatoProvider: React.FC<HidatoProviderProps> = ({ children }) => {
         const proof = await backend.generateProof(witness);
         setIsVerifying(false);
         setIsVerified(true);
+        setVerificationMessage(false);
         console.log(proof);
       } catch (error) {
         console.error("Error generating proof:", error);
+        setVerificationMessage(false);
         setIsVerifying(false);
         setIsVerified(false);
         
@@ -354,13 +438,9 @@ export const HidatoProvider: React.FC<HidatoProviderProps> = ({ children }) => {
       setError("There was a problem verifying your solution. Proof generation failed.");
     }
   }, [solution, fixedPositions, gridSize, markMistake]);
+  
   // Reset game
   const resetGame = useCallback((): void => {
-    const { puzzle: initialPuzzle, fixedPositions } =
-      generateRandomPuzzle(gridSize);
-    setSolution(initialPuzzle);
-    setPuzzle(initialPuzzle);
-    setFixedPositions(fixedPositions);
     setIsVerified(false);
     setError(null);
     setPlacementHistory([]);
@@ -368,7 +448,10 @@ export const HidatoProvider: React.FC<HidatoProviderProps> = ({ children }) => {
     setElapsedTime(0);
     setMistakeCount(0);
     setScore(0);
-  }, [gridSize]);
+    
+    // Generate a new puzzle
+    generatePuzzleWithNoir();
+  }, [generatePuzzleWithNoir]);
 
   // Context value
   const value: HidatoContextType = {
@@ -382,6 +465,8 @@ export const HidatoProvider: React.FC<HidatoProviderProps> = ({ children }) => {
     placementHistory,
     selectedNumber,
     fixedPositions,
+    verificationMessage,
+    setVerificationMessage,
     updateCell,
     removeNumber,
     selectNumber,

@@ -212,6 +212,17 @@
   position: relative;
 }
 
+.verificationMessage {
+  background: linear-gradient(145deg, #c8e6c9, #a5d6a7);
+  color: #2e7d32;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 16px;
+  font-size: 1rem;
+  /* text-align: center; */
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+}
+
 .scoreChange {
   position: absolute;
   top: -16px;

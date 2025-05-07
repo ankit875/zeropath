@@ -19,6 +19,7 @@ const HidatoGrid = () => {
     markMistake,
     mistakeCount,
     resetGame,
+    verificationMessage,
   } = useHidato();
 
   // Local state for timing display
@@ -128,6 +129,12 @@ const HidatoGrid = () => {
         </div>
       </div>
       
+      {/* Verification Message */}
+      {verificationMessage && (
+      <div className={styles.verificationMessage}>
+          Proof is Generating...
+        </div>
+      )}
       {/* Grid */}
       <div 
         className={classNames(styles.grid, { [styles.verified]: isVerified })}
