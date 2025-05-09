@@ -1,4 +1,6 @@
 grid_size = 4
+mode = 0
+randomness = 1
 solution = [1, 10, 11, 12,
         2, 9, 8, 13,
         3, 4, 7, 14,

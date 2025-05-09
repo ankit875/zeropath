@@ -63,7 +63,6 @@
   color: #2e7d32;
 }
 
-/* Add animation for verification */
 @keyframes celebrateVerified {
   0% { transform: scale(1); }
   50% { transform: scale(1.05); }
@@ -96,7 +95,6 @@
   opacity: 1;
 }
 
-/* Selected number styling */
 .selected {
   position: relative;
   z-index: 2;
@@ -131,7 +129,6 @@
   100% { transform: scale(1); opacity: 0.8; }
 }
 
-/* Game Container and Stats */
 .gameContainer {
   display: flex;
   flex-direction: column;
@@ -206,10 +203,19 @@
   to { opacity: 1; }
 }
 
-/* Score specific styling */
 .scoreValue {
   color: #1976d2;
   position: relative;
+}
+
+.verificationMessage {
+  background: linear-gradient(145deg, #c8e6c9, #a5d6a7);
+  color: #2e7d32;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 16px;
+  font-size: 1rem;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
 }
 
 .scoreChange {
@@ -231,7 +237,6 @@
   100% { opacity: 0; transform: translate(-50%, -20px); }
 }
 
-/* Mistakes counter */
 .mistakeCounter {
   color: #e53935;
 }
@@ -309,4 +314,45 @@
 
 .resetButton:active {
   transform: translateY(1px) scale(0.98);
+}
+
+.placeholderGrid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  min-height: 300px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.placeholderMessage {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #666;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loadingMessage {
+  color: #3f51b5;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 20px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #3f51b5;
+  border-radius: 50%;
+  animation: spin 1.5s linear infinite;
+  display: block;
 }

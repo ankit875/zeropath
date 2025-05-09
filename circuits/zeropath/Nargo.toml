@@ -1,6 +1,7 @@
 [package]
 name = "zeropath"
 type = "bin"
+entry = "src/main.nr"
 authors = ["ankitagrawal620@gmail.com"]
 
 [dependencies]

@@ -19,6 +19,8 @@ const HidatoGrid = () => {
     markMistake,
     mistakeCount,
     resetGame,
+    verificationMessage,
+    gameInitialized, // Added this to check if game is initialized
   } = useHidato();
 
   // Local state for timing display
@@ -37,10 +39,12 @@ const HidatoGrid = () => {
     }
   }, [elapsedTime]);
 
-  // Start the timer when component mounts
+  // Start the timer when component mounts (only if game is initialized)
   useEffect(() => {
-    startTimer();
-  }, [startTimer]);
+    if (gameInitialized) {
+      startTimer();
+    }
+  }, [gameInitialized, startTimer]);
 
   // Track score changes for animation
   useEffect(() => {
@@ -73,26 +77,29 @@ const HidatoGrid = () => {
   };
 
   const handleCellClick = (row: number, col: number) => {
-    // Don't allow clicks on fixed cells or when puzzle is verified
+    if (!gameInitialized) {
+      return;
+    }
+    
     if (puzzle[row][col] !== 0 || isVerified) {
       return;
     }
     
-    // If the cell already has a value and we're replacing it, mark as mistake
     if (solution[row][col] !== 0 && solution[row][col] !== null) {
       markMistake();
     }
     
-    // Update the cell with the selected or next consecutive number
     updateCell(row, col);
   };
   
   const handleCellRightClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, row: number, col: number, value: number) => {
-    event.preventDefault(); // Prevent default context menu
+    event.preventDefault();
     
-    // Only allow selecting non-fixed numbers
+    if (!gameInitialized) {
+      return false;
+    }
+    
     if (value > 1 && puzzle[row][col] === 0) {
-      // If removing a value, mark as mistake
       if (solution[row][col] !== 0 && solution[row][col] !== null) {
         markMistake();
       }
@@ -103,9 +110,22 @@ const HidatoGrid = () => {
     return false;
   };
 
+
+  if (!gameInitialized) {
+    return (
+      <div className={styles.gameContainer}>
+        <div className={styles.placeholderGrid}>
+          <div className={verificationMessage ? `${styles.placeholderMessage} ${styles.loadingMessage}` : styles.placeholderMessage}>
+            {verificationMessage && <div className={styles.spinner}></div>}
+            {verificationMessage ? "Generating puzzle, please wait..." : "Click \"Join Tournament\" to start the game!"}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.gameContainer}>
-      {/* Timer and Score Display */}
       <div className={styles.gameStats}>
         <div className={styles.statItem}>
           <span className={styles.statLabel}>Time</span>
@@ -128,6 +148,11 @@ const HidatoGrid = () => {
         </div>
       </div>
       
+      {verificationMessage && (
+      <div className={styles.verificationMessage}>
+          Proof is Generating...
+        </div>
+      )}
       {/* Grid */}
       <div 
         className={classNames(styles.grid, { [styles.verified]: isVerified })}
@@ -173,14 +198,12 @@ const HidatoGrid = () => {
         ))}
       </div>
       
-      {/* Game Controls and Completion Message */}
       <div className={styles.gameControls}>
         {isVerified && (
           <div className={styles.completionMessage}>
             <h3>Puzzle Completed!</h3>
             <p>You solved it in {timerDisplay}</p>
             
-            {/* Score Breakdown */}
             <div className={styles.scoreDetails}>
               {(() => {
                 const breakdown = calculateScoreBreakdown();
