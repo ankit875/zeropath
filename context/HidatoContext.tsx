@@ -12,8 +12,10 @@ import React, {
   useCallback,
   ReactNode,
   useEffect,
+  useRef,
 } from "react";
 import { UltraHonkBackend } from "@aztec/bb.js";
+import { AztecWalletSdk, obsidion } from "@nemi-fi/wallet-sdk";
 
 // Types
 type CellValue = number;
@@ -51,8 +53,9 @@ interface HidatoContextType {
   pauseTimer: () => void;
   mistakeCount: number;
   markMistake: () => void;
-  gameInitialized: boolean;  // New property to track if game is initialized
-  initializeGame: () => void; // New method to initialize the game
+  gameInitialized: boolean; 
+  initializeGame: () => void; 
+  sdk: AztecWalletSdk;
 }
 
 interface HidatoProviderProps {
@@ -486,6 +489,13 @@ export const HidatoProvider: React.FC<HidatoProviderProps> = ({ children }) => {
     generatePuzzleWithNoir();
   }, [generatePuzzleWithNoir]);
 
+  const sdk = useRef(
+      new AztecWalletSdk({
+        aztecNode: "https://full-node.alpha-testnet.aztec.network/",
+        connectors: [obsidion({ walletUrl: "https://app.obsidion.xyz" })],
+      })
+    ).current;
+
   // Context value
   const value: HidatoContextType = {
     gridSize,
@@ -512,8 +522,9 @@ export const HidatoProvider: React.FC<HidatoProviderProps> = ({ children }) => {
     pauseTimer,
     mistakeCount,
     markMistake,
-    gameInitialized,       // New property
-    initializeGame,        // New method
+    gameInitialized,       
+    initializeGame,
+    sdk,       
   };
 
   return (

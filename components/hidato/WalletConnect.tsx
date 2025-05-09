@@ -1,58 +1,115 @@
-import { useState } from "react";
-import { AztecWalletSdk, obsidion } from "@nemi-fi/wallet-sdk"
-import { Contract } from "@nemi-fi/wallet-sdk/eip1193"
-import { TokenContract } from "@aztec/noir-contracts.js/Token"
-import { AztecAddress } from "@aztec/aztec.js";
+import { useState, useRef, useEffect } from "react";
+import { useAccount } from "@nemi-fi/wallet-sdk/react";
+import "./WalletConnect.css";
+import { useHidato } from "context/HidatoContext";
 
 export const WalletConnect = () => {
-    const [isConnected, setIsConnected] = useState(false);
-    const [account, setAccount] = useState(null);
-
-    // const NODE_URL = "http://localhost:8080" // sandbox
-// const NODE_URL = "https://registry.obsidion.xyz/node" // testnet
-const NODE_URL = "http://pxe.obsidion.xyz/sandbox" // devnet
-
-const WALLET_URL = "https://app.obsidion.xyz"
-
-// This should be instantiated outside of any js classes / react components
-const sdk = new AztecWalletSdk({
-  aztecNode: NODE_URL,
-  connectors: [obsidion({walletUrl: WALLET_URL})]
-})
-
-// example method that does...
-// 1. connect to wallet
-// 2. instantiate token contract
-// 3. send tx
-
-class Token extends Contract.fromAztec(TokenContract) {}
-    
-    const connectWallet = async () => {
-        // instantiate wallet sdk
-  const account = await sdk.connect("obsidion")
-
-  const tokenAddress = AztecAddress.fromString("0x08a7b5ff689b190285de04dd7431b439342b6ad9c2168313a32be3b30fce28a4")
-  const token = await Token.at(tokenAddress, account.getAddress())
-    setAccount(account?.getAddress())
-  // send tx
-  const tx = await token.methods.transfer(account.getAddress(), 100).send().wait()
+  const [isConnected, setIsConnected] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const menuRef = useRef(null);
+  const {sdk} = useHidato();
   
-  console.log("tx", tx)
-//   // simulate tx
-  const balance = await token.methods.balance_of_private(account.getAddress()).simulate()
-    console.log("balance", balance.toString())
+  const account = useAccount(sdk);
+  
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setShowMenu(false);
+      }
     };
     
-    return (
-        <div>
-        {isConnected ? (
-            <div>
-            <p>Connected as: {account}</p>
-            <button onClick={() => setIsConnected(false)}>Disconnect</button>
-            </div>
-        ) : (
-            <button onClick={connectWallet}>Connect Wallet</button>
-        )}
-        </div>
-    );
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+  
+  useEffect(() => {
+    if (account?.address) {
+      setIsConnected(true);
+      setIsLoading(false);
     }
+  }, [account]);
+  
+  const handleConnect = async () => {
+    try {
+      setIsLoading(true);
+      await sdk.connect('obsidion');
+            setTimeout(() => {
+        if (!account?.address) {
+          setIsLoading(false);
+        }
+      }, 10000); // 10 second timeout
+    } catch (error) {
+      console.error("Connection error:", error);
+      setIsLoading(false);
+    }
+  };
+  
+  const handleDisconnect = () => {
+    setIsConnected(false);
+    setShowMenu(false);
+    
+    if (typeof sdk.disconnect === 'function') {
+      sdk.disconnect();
+    }
+  };
+  
+  const copyAddress = () => {
+    if (account?.address) {
+      navigator.clipboard.writeText(account.address.toString());
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+  
+  const formatAddress = (address) => {
+    if (!address) return "";
+    const addr = address.toString();
+    return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+  };
+  
+  if (!isConnected) {
+    return (
+      <button 
+        className={`wallet-btn ${isLoading ? 'loading' : ''}`} 
+        onClick={handleConnect}
+        disabled={isLoading}
+      >
+        {isLoading ? 'Connecting...' : 'Connect Wallet'}
+      </button>
+    );
+  }
+  
+  return (
+    <div className="wallet-container" ref={menuRef}>
+      <button 
+        className="wallet-btn connected" 
+        onClick={() => setShowMenu(!showMenu)}
+      >
+        <span className="status-dot"></span>
+        <span>{formatAddress(account?.address)}</span>
+        <span className="dropdown-arrow">▼</span>
+      </button>
+      
+      {showMenu && (
+        <div className="wallet-dropdown">
+          <div className="wallet-address">
+            <span>{formatAddress(account?.address)}</span>
+            <button 
+              className={`copy-btn ${copied ? 'copied' : ''}`} 
+              onClick={copyAddress}
+            >
+              {copied ? '✓ Copied' : 'Copy'}
+            </button>
+          </div>
+          <button className="disconnect-btn" onClick={handleDisconnect}>
+            Disconnect
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default WalletConnect;
