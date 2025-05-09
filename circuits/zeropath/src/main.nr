@@ -57,7 +57,6 @@ fn verify_solution(
     for i in 0..16 {
         let value: u32 = solution[i];
         
-        // Cast Field to integers for comparison
         let is_in_range: bool = (value >= 1) & (value <= 16);
         assert(is_in_range, "Value out of range");
         

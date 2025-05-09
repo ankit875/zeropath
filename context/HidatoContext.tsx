@@ -1,7 +1,7 @@
 "use client";
 
 import { Noir } from "@noir-lang/noir_js";
-import circuit from "../circuits/zeropath/target/zeropath.json"; // Update path to your hidato circuit
+import circuit from "../circuits/zeropath/target/zeropath.json";
 import { CompiledCircuit } from "@noir-lang/noir_js";
 import {generate_random_puzzle} from "../codegen/index"
 
@@ -51,7 +51,8 @@ interface HidatoContextType {
   pauseTimer: () => void;
   mistakeCount: number;
   markMistake: () => void;
-
+  gameInitialized: boolean;  // New property to track if game is initialized
+  initializeGame: () => void; // New method to initialize the game
 }
 
 interface HidatoProviderProps {
@@ -115,6 +116,7 @@ export const HidatoProvider: React.FC<HidatoProviderProps> = ({ children }) => {
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [timerActive, setTimerActive] = useState<boolean>(false);
   const [mistakeCount, setMistakeCount] = useState<number>(0);
+  const [gameInitialized, setGameInitialized] = useState<boolean>(false); // New state to track if game is initialized
   
   // Generate a new puzzle using the Noir circuit
   const generatePuzzleWithNoir = useCallback(async () => {
@@ -185,17 +187,49 @@ export const HidatoProvider: React.FC<HidatoProviderProps> = ({ children }) => {
       
       console.log("Puzzle generated successfully", newPuzzle, newFixedPositions);
       
+      // Return successfully to indicate generation is complete
+      return true;
+      
     } catch (error) {
       console.error("Error generating puzzle:", error);
       setIsVerifying(false);
       setVerificationMessage(false);
       setError("Failed to generate puzzle. Please try again.");
+      
+      // Re-throw the error to be caught by the initializeGame function
+      throw error;
     }
   }, [gridSize]);
 
-  // Generate a puzzle when the component mounts
-  useEffect(() => {
-    generatePuzzleWithNoir();
+  // Initialize the game - this is now separate from the component mount
+  const initializeGame = useCallback(async () => {
+    // Reset game state
+    setIsVerified(false);
+    setError(null);
+    setPlacementHistory([]);
+    setSelectedNumber(null);
+    setElapsedTime(0);
+    setMistakeCount(0);
+    setScore(0);
+    
+    // Set verification message to show loading state
+    setVerificationMessage(true);
+    
+    try {
+      // Generate puzzle first, before setting gameInitialized to true
+      await generatePuzzleWithNoir();
+      
+      // After puzzle is generated successfully, set game as initialized
+      setGameInitialized(true);
+      
+      // Start timer automatically
+      setTimerActive(true);
+    } catch (error) {
+      console.error("Failed to initialize game:", error);
+      setError("Failed to initialize game. Please try again.");
+      // Hide loading message
+      setVerificationMessage(false);
+    }
   }, [generatePuzzleWithNoir]);
   
   // Add timer functionality
@@ -433,6 +467,7 @@ export const HidatoProvider: React.FC<HidatoProviderProps> = ({ children }) => {
       console.error("Error executing circuit:", error);
       setIsVerifying(false);
       setIsVerified(false);
+      setVerificationMessage(false);
       setError("There was a problem verifying your solution. Proof generation failed.");
     }
   }, [solution, fixedPositions, gridSize, markMistake]);
@@ -477,6 +512,8 @@ export const HidatoProvider: React.FC<HidatoProviderProps> = ({ children }) => {
     pauseTimer,
     mistakeCount,
     markMistake,
+    gameInitialized,       // New property
+    initializeGame,        // New method
   };
 
   return (

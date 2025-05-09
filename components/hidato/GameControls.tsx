@@ -14,17 +14,87 @@ const GameControls = () => {
     selectedNumber,
     removeNumber,
     fixedPositions,
+    gameInitialized, 
+    verificationMessage,
   } = useHidato();
 
   const maxNumber = 16; // 4x4 grid
 
-  // Get all placed numbers that can be removed (non-fixed numbers)
   const placedNumbers = placementHistory.filter((num) => !isFixedNumber(num));
 
-  // Check if a number is fixed (part of the initial puzzle)
   function isFixedNumber(num: number) {
-    // Check if the number is in the fixed positions
     return fixedPositions.some((pos) => pos.value === num);
+  }
+
+  if (!gameInitialized) {
+    return (
+      <div className={styles.controls}>
+        <div className={styles.note}>
+          <h3>Hidato Rules</h3>
+          <ul className="rules-list">
+            <li className="rule-item">
+              <svg
+                className="check-icon"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              Fill in the grid with consecutive numbers
+            </li>
+            <li className="rule-item">
+              <svg
+                className="check-icon"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              Each number must be adjacent to the previous and next number
+            </li>
+            <li className="rule-item">
+              <svg
+                className="check-icon"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              Complete the puzzle as quickly as possible to earn more points
+            </li>
+          </ul>
+          
+          <div className={verificationMessage ? `${styles.controlsPlaceholder} ${styles.loadingMessage}` : styles.controlsPlaceholder}>
+            {verificationMessage ? (
+              <>
+                <div className={styles.spinner}></div>
+                <p>Generating puzzle, please wait...</p>
+              </>
+            ) : (
+              <p>Join a tournament to start playing!</p>
+            )}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

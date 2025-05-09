@@ -254,3 +254,13 @@
   .note li:last-child {
     margin-bottom: 0;
   }
+
+  .controlsPlaceholder {
+    margin-top: 2rem;
+    padding: 1rem;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 1.1rem;
+    color: #666;
+  }
