@@ -3,12 +3,15 @@ import "./HidatoHomePage.css";
 import HidatoGrid from "./HidatoGrid";
 import GameControls from "./GameControls";
 import { useHidato } from "../../context/HidatoContext"; 
+import { WalletConnect } from "./WalletConnect";
+import { useAccount } from "@nemi-fi/wallet-sdk/react";
 
 const HidatoHomePage = () => {
   const [selectedTournament, setSelectedTournament] = useState("weekly");
   const [gameStarted, setGameStarted] = useState(false);
   
-  const { initializeGame } = useHidato();
+  const { initializeGame, sdk } = useHidato();
+  const account = useAccount(sdk);
 
   const handleStartGame = () => {
     initializeGame(); 
@@ -51,6 +54,7 @@ const HidatoHomePage = () => {
           <button>Rewards</button>
           <button>How to Play</button>
         </nav>
+        <WalletConnect/>
         <button className="menu-button">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -78,10 +82,14 @@ const HidatoHomePage = () => {
                 Compete against players worldwide and win amazing rewards
               </p>
               <div className="hero-buttons">
-                <button className="primary-button" onClick={handleStartGame}>
+                <button 
+                  className="primary-button" 
+                  onClick={handleStartGame} 
+                  disabled={!account?.address}
+                >
                   Join Tournament
                 </button>
-                <button className="secondary-button">View Leaderboard</button>
+                <button className="secondary-button" disabled={!account?.address}>View Leaderboard</button>
               </div>
             </div>
 
