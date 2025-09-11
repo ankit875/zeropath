@@ -491,7 +491,7 @@ export const HidatoProvider: React.FC<HidatoProviderProps> = ({ children }) => {
 
   const sdk = useRef(
       new AztecWalletSdk({
-        aztecNode: "https://full-node.alpha-testnet.aztec.network/",
+        aztecNode: "https://aztec-alpha-testnet-fullnode.zkv.xyz",
         connectors: [obsidion({ walletUrl: "https://app.obsidion.xyz" })],
       })
     ).current;
